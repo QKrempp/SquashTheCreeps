@@ -1,0 +1,100 @@
+[gd_scene load_steps=8 format=3 uid="uid://cgft2hfk4cxx8"]
+
+[ext_resource type="Script" uid="uid://buls6smtkqoqq" path="res://mob.gd" id="1_nokgg"]
+[ext_resource type="PackedScene" uid="uid://bicorb7we351t" path="res://art/mob.glb" id="2_ubaqv"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p11y5"]
+size = Vector3(1.61078, 1.27197, 2.49188)
+
+[sub_resource type="Animation" id="Animation_ubaqv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/Character:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_nokgg"]
+resource_name = "Squish"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(0.287175, 0.435275),
+"update": 0,
+"values": [Vector3(0, -0.139626, 0), Vector3(0, 0.15708, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_p11y5"]
+resource_name = "squashed"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(3.4822, 1),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(1.5, 0.2, 1.5)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_p11y5"]
+_data = {
+&"RESET": SubResource("Animation_ubaqv"),
+&"Squish": SubResource("Animation_nokgg"),
+&"squashed": SubResource("Animation_p11y5")
+}
+
+[node name="Mob" type="CharacterBody3D" groups=["mob"]]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_nokgg")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="Character" parent="Pivot" instance=ExtResource("2_ubaqv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0993416, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.016449, 0.409357, 0.420502)
+shape = SubResource("BoxShape3D_p11y5")
+
+[node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51882, 0.274674)
+aabb = AABB(-1.16735, -0.729765, -1.60487, 2.3347, 1.10601, 3.20973)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_p11y5")
+}
+autoplay = "Squish"
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier3D" to="." method="_on_visible_on_screen_notifier_3d_screen_exited"]
